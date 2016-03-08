@@ -4,14 +4,14 @@ Vagrant configuration to install Ubuntu Server LEMP + Phalcon with provision.sh 
 
 Vagrant file to deploy a local development environment
 
-- Ubuntu 14.04 LTS
-- Ngingx
-..- Default virtual host on www.phvm01.dev for test any html file or php
-..- Phalcon dev virtual host on www.phalcon.dev
-- Mysql
-..- root password is set to "pass1234"
-- PHP 
-- PhalconPHP module
+* Ubuntu 14.04 LTS
+* Ngingx
+..* Default virtual host on www.phvm01.dev for test any html file or php
+..* Phalcon dev virtual host on www.phalcon.dev
+* Mysql
+..* root password is set to "pass1234"
+* PHP 
+* PhalconPHP module
 
 You can see the php modules installed at www.phvm01.dev/info.php
 
