@@ -19,13 +19,13 @@ You can see the php modules installed at www.phvm01.dev/info.php
 
 ## Installation and deployment
 
-Install vagrant
+Install vagrant anf git
 
-`$ sudo apt-get install vagrant`
+`$ sudo apt-get install vagrant git`
 
 Make a Vagrant Directory and one VM directory inside, like phvm01
 
-`$ mkdir -p ~/Vagrant/phvm01`
+`$ mkdir -p ~/Vagrant`
 
 Make Projects directory to mount development files on local file system
 
@@ -33,7 +33,7 @@ Make Projects directory to mount development files on local file system
 
 Clone this repository
 
-`$ git clone https://github.com/larmedina75/Vagrant-LEMP-phalconphp.git`
+`$ git clone https://github.com/larmedina75/Vagrant-LEMP-phalconphp.git phvm01`
 
 Go to vagrant vm file and up the virtual machine
 
@@ -53,7 +53,7 @@ Save the file and open a web browser to access this pages and start to develop w
 
 ## Customization
 
-You can adapt this configuration to create more VMs by example have phvm02, phvm0, etc. or have several projects.
+You can adapt this configuration to create more VMs by example have phvm02, phvm03, etc. or have several projects.
 
 Just copy the text between `# start Project` and `# end Project`, change some values like "phalconphp" by your new project name and insert modified text after `# end Project`.
 
