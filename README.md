@@ -43,7 +43,7 @@ Go to vagrant vm file and up the virtual machine
 
 Edit the /etc/hosts file and add the IP and host names to be accessible from your host system.
 
-sudo nano /etc/hosts
+`sudo nano /etc/hosts`
 
 Add this line to the end of the file
 
@@ -54,4 +54,7 @@ Save the file and open a web browser to access this pages and start to develop w
 ## Customization
 
 You can adapt this configuration to create more VMs by example have phvm02, phvm0, etc. or have several projects.
-Just copy the text between `# start Project` and `# end Project`, change some values like "phalconphp" by your new project name and insert modified text after # end Project.
+
+Just copy the text between `# start Project` and `# end Project`, change some values like "phalconphp" by your new project name and insert modified text after `# end Project`.
+
+You may need to add some lines to the `/etc/hosts` file and include the mount command to Vagrantfile whit the new path.
