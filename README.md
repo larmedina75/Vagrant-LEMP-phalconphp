@@ -6,14 +6,16 @@ Vagrant file to deploy a local development environment
 
 - Ubuntu 14.04 LTS
 - Ngingx
--- Default vistual host on www.phvm01.dev for test any html file or php
--- Phalcon dev virtualhost on www.phalcon.dev
+..- Default vistual host on www.phvm01.dev for test any html file or php
+..- Phalcon dev virtualhost on www.phalcon.dev
 - Mysql
--- root password set to "pass1234"
+..- root password is set to "pass1234"
 - PHP 
 - PhalconPHP module installed
 
-You can see list of modules at www.phvm01.dev/info.php
+You can see the php modules installed at www.phvm01.dev/info.php
+
+
 
 # Intallation and deployment
 
@@ -23,13 +25,11 @@ Install vagrant
 
 Make a Vagrant Directory and one VM directory inside, like phvm01
 
-`$ cd ~`
-`$ mkdir -p Vagrant/phvm01`
+`$ mkdir -p ~/Vagrant/phvm01`
 
 Make Proyects directory to mount develoment files on local file system
 
-`$ cd ~`
-`$ mkdir -p Proyects/phalcon`
+`$ mkdir -p ~/Proyects/phalcon`
 
 Clone this repository
 
