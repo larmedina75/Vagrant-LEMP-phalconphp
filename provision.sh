@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
+
 export DEBIAN_FRONTEND=noninteractive
 
+# add phalconphp PPA
 sudo apt-add-repository -y ppa:phalcon/stable
 
 sudo aptitude update -q
@@ -16,7 +18,8 @@ sudo -E apt-get -q -y install mysql-server
 sudo aptitude install -q -y -f mysql-client nginx php5-fpm php5-cli php5-phalcon
 
 # Install commonly used php packages
-sudo aptitude install -q -y -f php5-mysql php5-curl php5-gd php5-intl php-pear php5-imagick php5-imap php5-mcrypt php5-memcached php5-ming php5-ps php5-pspell php5-recode php5-snmp php5-sqlite php5-tidy php5-xmlrpc php5-xsl php5-xcache git
+sudo aptitude install -q -y -f php5-mysql php5-curl php5-gd php5-intl php-pear php5-imagick php5-imap php5-mcrypt php5-memcached php5-ming php5-ps php5-recode php5-sqlite php5-tidy php5-xmlrpc php5-xsl php5-xcache git
+# php5-pspell php5-snmp snmp
 
 sudo rm /etc/nginx/nginx.conf
 sudo touch /etc/nginx/nginx.conf
@@ -133,8 +136,82 @@ sudo cat >> /usr/share/nginx/html/info.php <<'EOF'
 <?php phpinfo(); ?>
 EOF
 
+mkdir -p /var/www/phalconphp/public
+
+sudo touch /etc/nginx/sites-available/phalconphp
+sudo cat >> /etc/nginx/sites-available/phalconphp <<'EOF'
+server {
+    #listen       80;
+    server_name www.phlconphp.dev;
+
+    root /var/www/phalconphp/public/;
+    index  index.php;
+
+    charset utf8;
+
+    #access_log  logs/host.access.log  main;
+    #access_log /var/www/phalconphp/logs/access.log;
+    #error_log /var/www/phalconphp/logs/error.log;
+
+	if ($request_method !~ ^(GET|HEAD|POST)$ )
+	{
+	       return 405;
+	}
+
+    location / {
+        autoindex off;
+        try_files $uri $uri/ /index.php?$args;
+    }
+
+	location ~* \.(jpg|jpeg|gif|png|css|js|ico|xml)$ {
+            access_log        off;
+            log_not_found     off;
+            expires           30d;
+    }
+
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    #error_page   500 502 503 504  /50x.html;
+    #location = /50x.html {
+    #    root   html;
+    #}
+
+	location ~ \.php$ {
+		try_files $uri =404;
+		fastcgi_split_path_info ^(.+\.php)(/.+)$;
+		fastcgi_pass unix:/var/run/php5-fpm.sock;
+		fastcgi_index index.php;
+		include fastcgi_params;
+	}
+
+}
+EOF
+
 #sudo aptitude install -q -y -f phpmyadmin
 
 sudo service nginx restart
 
 sudo service php5-fpm restart
+
+# Install composer
+cd /tmp/
+sudo curl -sS https://getcomposer.org/installer | php
+sudo mv /tmp/composer.phar /usr/local/bin/composer
+sudo chmod 755 /usr/local/bin/composer
+
+sudo touch /tmp/composer.json
+sudo cat >> /tmp/composer.json <<'EOF'
+{
+"require": {
+"phalcon/devtools": "dev-master"
+}
+}
+EOF
+
+sudo composer install
+
+sudo mv /tmp/vendor/phalcon/devtools /opt/
+sudo ln -s /opt/devtools/phalcon.php /usr/bin/phalcon
+sudo chmod ugo+x /usr/bin/phalcon
