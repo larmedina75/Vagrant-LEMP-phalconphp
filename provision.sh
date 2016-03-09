@@ -136,13 +136,14 @@ sudo cat >> /usr/share/nginx/html/info.php <<'EOF'
 <?php phpinfo(); ?>
 EOF
 
+# start Ptoject
+
 mkdir -p /var/www/phalconphp/public
 
 sudo touch /etc/nginx/sites-available/phalconphp
 sudo cat >> /etc/nginx/sites-available/phalconphp <<'EOF'
 server {
     #listen       80;
-    server_name www.phlconphp.dev;
 
     root /var/www/phalconphp/public/;
     index  index.php;
@@ -188,6 +189,11 @@ server {
 
 }
 EOF
+
+sudo ln -s /etc/nginx/sites-available/phalconphp /etc/nginx/sites-enabled/phalconphp
+
+# end Project
+
 
 #sudo aptitude install -q -y -f phpmyadmin
 
