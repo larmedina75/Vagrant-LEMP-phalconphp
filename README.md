@@ -5,12 +5,19 @@ Vagrant configuration to install Ubuntu Server LEMP + Phalcon with provision.sh 
 Vagrant file to deploy a local development environment
 
 * Ubuntu 14.04 LTS
+
 * Ngingx
+
 ..* Default virtual host on www.phvm01.dev for test any html file or php
+
 ..* Phalcon dev virtual host on www.phalcon.dev
+
 * Mysql
+
 ..* root password is set to "pass1234"
+
 * PHP 
+
 * PhalconPHP module
 
 You can see the php modules installed at www.phvm01.dev/info.php
@@ -19,9 +26,10 @@ You can see the php modules installed at www.phvm01.dev/info.php
 
 ## Installation and deployment
 
-Install vagrant anf git
+Install vagrant, remember that must be download the installer file from https://www.vagrant.com/downloads.html
+This configuration requieres some software packages to work.
 
-`$ sudo apt-get install vagrant git`
+`$ sudo apt-get install git nfs-common nfs-kernel-server`
 
 Make a Vagrant Directory and one VM directory inside, like phvm01
 
