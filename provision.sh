@@ -144,6 +144,7 @@ sudo touch /etc/nginx/sites-available/phalconphp
 sudo cat >> /etc/nginx/sites-available/phalconphp <<'EOF'
 server {
     #listen       80;
+    server_name www.phalconphp.dev;
 
     root /var/www/phalconphp/public/;
     index  index.php;
