@@ -143,50 +143,58 @@ mkdir -p /var/www/phalconphp/public
 sudo touch /etc/nginx/sites-available/phalconphp
 sudo cat >> /etc/nginx/sites-available/phalconphp <<'EOF'
 server {
-    #listen       80;
+    listen       80;
     server_name www.phalconphp.dev;
 
-    root /var/www/phalconphp/public/;
     index  index.php;
+    set $root_path "/var/www/phalconphp/public/";
+    root $root_path;
 
     charset utf8;
 
-    #access_log  logs/host.access.log  main;
-    #access_log /var/www/phalconphp/logs/access.log;
-    #error_log /var/www/phalconphp/logs/error.log;
-
-	if ($request_method !~ ^(GET|HEAD|POST)$ )
-	{
-	       return 405;
-	}
-
-    location / {
-        autoindex off;
-        try_files $uri $uri/ /index.php?$args;
+    if ($request_method !~ ^(GET|HEAD|POST)$ )
+    {
+	return 405;
     }
 
-	location ~* \.(jpg|jpeg|gif|png|css|js|ico|xml)$ {
+    client_max_body_size 10M;
+
+    try_files $uri $uri/ @rewrite;
+
+    location @rewrite {
+        rewrite ^/(.*)$ /index.php?_url=/$1;
+	autoindex off;
+    }
+
+    location ~* \.(jpg|jpeg|gif|png|css|js|ico|xml)$ {
             access_log        off;
             log_not_found     off;
             expires           30d;
     }
 
-    #error_page  404              /404.html;
+    location ~ \.php {
+        fastcgi_index /index.php;
+        fastcgi_pass unix:/var/run/php5-fpm.sock;
+        fastcgi_intercept_errors on;
+        include fastcgi_params;
+        fastcgi_split_path_info ^(.+\.php)(/.*)$;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+        fastcgi_param PATH_TRANSLATED
+        $document_root$fastcgi_path_info;
 
-    # redirect server error pages to the static page /50x.html
-    #
-    #error_page   500 502 503 504  /50x.html;
-    #location = /50x.html {
-    #    root   html;
-    #}
+        fastcgi_param SCRIPT_FILENAME
+        $document_root$fastcgi_script_name;
+        fastcgi_param DOCUMENT_ROOT $realpath_root;
+        fastcgi_param SCRIPT_FILENAME $realpath_root/index.php;
+    }
 
-	location ~ \.php$ {
-		try_files $uri =404;
-		fastcgi_split_path_info ^(.+\.php)(/.+)$;
-		fastcgi_pass unix:/var/run/php5-fpm.sock;
-		fastcgi_index index.php;
-		include fastcgi_params;
-	}
+    location ~* ^/(css|img|js|flv|swf|download)/(.+)$ {
+        root $root_path;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
 
 }
 EOF
