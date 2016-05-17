@@ -43,8 +43,10 @@ Clone this repository
 
 Go to Vagrant vm directory and download the the virtual machine
 
-`$ cd ~/Vagrant/phvm01
-$ vagrant box add ubuntu/trusty64`
+```
+$ cd ~/Vagrant/phvm01
+$ vagrant box add ubuntu/trusty64
+```
 
 And start the vagrant box
 
