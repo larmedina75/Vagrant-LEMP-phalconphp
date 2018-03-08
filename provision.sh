@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-
 export DEBIAN_FRONTEND=noninteractive
 
-# add phalconphp PPA
-sudo apt-add-repository -y ppa:phalcon/stable
+# Install Phalcon PHP repository
+curl -s https://packagecloud.io/install/repositories/phalcon/stable/script.deb.sh | sudo bash
 
+# update package list
 sudo aptitude update -q
 
 # Force a blank root password for mysql
@@ -12,74 +12,93 @@ sudo aptitude update -q
 #echo "mysql-server mysql-server/root_password_again password " | debconf-set-selections
 sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password pass1234'
 sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password pass1234'
-
-# Install mysql, nginx, php5-fpm
 sudo -E apt-get -q -y install mysql-server
-sudo aptitude install -q -y -f mysql-client nginx php5-fpm php5-cli php5-phalcon
 
-# Install commonly used php packages
-sudo aptitude install -q -y -f php5-mysql php5-curl php5-gd php5-intl php-pear php5-imagick php5-imap php5-mcrypt php5-memcached php5-ming php5-ps php5-recode php5-sqlite php5-tidy php5-xmlrpc php5-xsl php5-xcache git
-# php5-pspell php5-snmp snmp
+# install packages
+sudo -E apt-get -q -y install \
+nginx \
+php7.0-fpm \
+php7.0-common \
+php7.0-dev \
+php7.0-cli \
+php7.0-curl \
+php7.0-gd \
+php7.0-intl \
+php7.0-mbstring \
+php7.0-mcrypt \
+php7.0-xml \
+php7.0-mysql \
+php7.0-json \
+php-msgpack \
+php-imagick \
+imagemagick \
+curl \
+htop \
+vim \
+wget \
+git \
+zip \
+unzip 
 
+# install phalcon php module
+sudo -E apt-get -q -y install php7.0-phalcon
+
+# nginx configuration
 sudo rm /etc/nginx/nginx.conf
 sudo touch /etc/nginx/nginx.conf
 
 sudo cat >> /etc/nginx/nginx.conf <<'EOF'
 user www-data;
-worker_processes 1;
+worker_processes auto;
 pid /run/nginx.pid;
-
 events {
 	worker_connections 1024;
-	multi_accept on;
-	use epoll;
+	# multi_accept on;
 }
-
 http {
-
-	##
-	# Basic Settings
-	##
-
 	sendfile on;
 	tcp_nopush on;
 	tcp_nodelay on;
 	keepalive_timeout 15;
 	types_hash_max_size 2048;
 	server_tokens off;
-
 	# server_names_hash_bucket_size 64;
 	# server_name_in_redirect off;
-
+	fastcgi_buffers 16 16k;
+	fastcgi_buffer_size 32k;
 	include /etc/nginx/mime.types;
 	default_type application/octet-stream;
-
+	client_max_body_size 10M;
+	##
+	# SSL Settings
+	##
+	ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
+	ssl_prefer_server_ciphers on;
 	##
 	# Logging Settings
 	##
-
 	access_log /var/log/nginx/access.log;
 	error_log /var/log/nginx/error.log;
-
 	##
 	# Gzip Settings
 	##
-
 	gzip on;
 	gzip_disable "msie6";
-
 	gzip_vary on;
+	gzip_proxied any;
 	gzip_proxied expired no-cache no-store private auth;
 	# gzip_comp_level 6;
 	# gzip_buffers 16 8k;
 	# gzip_http_version 1.1;
-	gzip_types text/plain text/css text/xml text/javascript application/json application/x-javascript application/xml application/xml+rss;
-
+	gzip_types text/plain text/css application/json application/javascript text/xml application/xml 
+application/xml+rss text/javascript;
+	##
+	# Virtual Host Configs
+	##
 	include /etc/nginx/conf.d/*.conf;
 	include /etc/nginx/sites-enabled/*;
 }
 EOF
-
 
 sudo rm /etc/nginx/sites-available/default
 sudo touch /etc/nginx/sites-available/default
@@ -87,22 +106,21 @@ sudo touch /etc/nginx/sites-available/default
 sudo cat >> /etc/nginx/sites-available/default <<'EOF'
 server {
     listen       80;
-    server_name  www.phvm01.dev;
-
+    server_name  vm01.dev;
     charset utf8;
 
-    #access_log  logs/host.access.log  main;
+    root /var/www/html;
 
+    #access_log  logs/host.access.log  main;
 	if ($request_method !~ ^(GET|HEAD|POST)$ )
 	{
 	       return 405;
 	}
 
-    location / {
-        root   html;
-        index  index.html index.htm;
-    autoindex off;
-    }
+	location / {
+ 		try_files $uri $uri/ =404;
+ 		autoindex off;
+ 	}
 
 	location ~* \.(jpg|jpeg|gif|png|css|js|ico|xml)$ {
             access_log        off;
@@ -111,104 +129,63 @@ server {
     }
 
     #error_page  404              /404.html;
-
     # redirect server error pages to the static page /50x.html
     #
     error_page   500 502 503 504  /50x.html;
     location = /50x.html {
         root   html;
     }
-
-	location ~ \.php$ {
-		try_files $uri =404;
-		fastcgi_split_path_info ^(.+\.php)(/.+)$;
-		fastcgi_pass unix:/var/run/php5-fpm.sock;
-		fastcgi_index index.php;
-		include fastcgi_params;
-	}
-
+    
+    location ~ \.php$ {
+            include snippets/fastcgi-php.conf;
+            fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+    }
 
 }
 EOF
 
-sudo touch /usr/share/nginx/html/info.php
-sudo cat >> /usr/share/nginx/html/info.php <<'EOF'
-<?php phpinfo(); ?>
-EOF
-
-# start Ptoject
-
-mkdir -p /var/www/phalconphp/public
-
-sudo touch /etc/nginx/sites-available/phalconphp
-sudo cat >> /etc/nginx/sites-available/phalconphp <<'EOF'
+# configure phalcon host server
+sudo rm /etc/nginx/sites-available/phalcon
+sudo touch /etc/nginx/sites-available/phalcon
+sudo cat >> /etc/nginx/sites-available/phalcon <<'EOF'
 server {
-    listen       80;
-    server_name www.phalconphp.dev;
-
-    index  index.php;
-    set $root_path "/var/www/phalconphp/public/";
-    root $root_path;
-
-    charset utf8;
-
-    if ($request_method !~ ^(GET|HEAD|POST)$ )
-    {
-	return 405;
-    }
-
-    client_max_body_size 10M;
-
-    try_files $uri $uri/ @rewrite;
-
-    location @rewrite {
-        rewrite ^/(.*)$ /index.php?_url=/$1;
-	autoindex off;
-    }
-
-    location ~* \.(jpg|jpeg|gif|png|css|js|ico|xml)$ {
+        listen 80 ;
+        listen [::]:80 ;
+        root /var/www/phalcon/public;
+        # Add index.php to the list if you are using PHP
+        index index.html index.htm index.nginx-debian.html index.php;
+        server_name  phalcon.dev;
+        charset utf8;
+        location / {
+                try_files $uri $uri/ /index.php?_url=$uri&$args;
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404.
+                autoindex off;
+        }
+        location ~* \.(jpg|jpeg|gif|png|css|js|ico|xml)$ {
             access_log        off;
             log_not_found     off;
             expires           30d;
     }
-
-    location ~ \.php {
-        fastcgi_index /index.php;
-        fastcgi_pass unix:/var/run/php5-fpm.sock;
-        fastcgi_intercept_errors on;
-        include fastcgi_params;
-        fastcgi_split_path_info ^(.+\.php)(/.*)$;
-        fastcgi_param PATH_INFO $fastcgi_path_info;
-        fastcgi_param PATH_TRANSLATED
-        $document_root$fastcgi_path_info;
-
-        fastcgi_param SCRIPT_FILENAME
-        $document_root$fastcgi_script_name;
-        fastcgi_param DOCUMENT_ROOT $realpath_root;
-        fastcgi_param SCRIPT_FILENAME $realpath_root/index.php;
+        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        #
+        location ~ \.php$ {
+                include snippets/fastcgi-php.conf;
+        #       # With php7.0-cgi alone:
+        #       fastcgi_pass 127.0.0.1:9000;
+                # With php7.0-fpm:
+                fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+        }
     }
-
-    location ~* ^/(css|img|js|flv|swf|download)/(.+)$ {
-        root $root_path;
-    }
-
-    location ~ /\.ht {
-        deny all;
-    }
-
-}
 EOF
 
-sudo ln -s /etc/nginx/sites-available/phalconphp /etc/nginx/sites-enabled/phalconphp
+sudo ln -s /etc/nginx/sites-available/phalcon /etc/nginx/sites-enabled/phalcon
 
-# end Project
-
-
-#sudo aptitude install -q -y -f phpmyadmin
-
-sudo service nginx restart
-
-sudo service php5-fpm restart
+# create info.php file to show PHP modules' state
+sudo touch /var/www/html/info.php
+sudo cat >> /var/www/html/info.php <<'EOF'
+<?php phpinfo(); ?>
+EOF
 
 # Install composer
 cd /tmp/
@@ -216,6 +193,7 @@ sudo curl -sS https://getcomposer.org/installer | php
 sudo mv /tmp/composer.phar /usr/local/bin/composer
 sudo chmod 755 /usr/local/bin/composer
 
+#Install Phalcon Tools
 sudo touch /tmp/composer.json
 sudo cat >> /tmp/composer.json <<'EOF'
 {
@@ -226,7 +204,6 @@ sudo cat >> /tmp/composer.json <<'EOF'
 EOF
 
 sudo composer install
-
 sudo mv /tmp/vendor/phalcon/devtools /opt/
 sudo ln -s /opt/devtools/phalcon.php /usr/bin/phalcon
 sudo chmod ugo+x /usr/bin/phalcon
