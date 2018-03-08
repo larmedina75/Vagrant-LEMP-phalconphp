@@ -19,7 +19,7 @@ This configuration deploys a local development environment with:
 
 * and PhalconPHP module
 
-You can see the php modules installed at vm01.dev/info.php
+You can see the php modules installed at vm01.devel/info.php
 
 
 
@@ -36,12 +36,14 @@ Make Projects directory to mount development files on local file system
 
 Download the Vagrantfile and provision.sh files
 
-`wget https://github.com/larmedina75/Vagrant-LEMP-phalconphp/raw/master/Vagrantfile
-wget https://github.com/larmedina75/Vagrant-LEMP-phalconphp/raw/master/provision.sh`
+```
+wget https://github.com/larmedina75/Vagrant-LEMP-phalconphp/raw/master/Vagrantfile
+wget https://github.com/larmedina75/Vagrant-LEMP-phalconphp/raw/master/provision.sh
+```
 
-Clone this repository
+Clone your phalcon project repository and save it on  a folder with the name "phalcon"
 
-`$ git clone https://github.com/larmedina75/Vagrant-LEMP-phalconphp.git phalcon`
+`$ git clone [URL of your phalcon project] phalcon`
 
 Download the the virtual machine image
 
@@ -61,7 +63,7 @@ Edit the /etc/hosts file and add the IP and host names to be accessible from you
 
 Add this line to the end of the file
 
-`10.4.4.51      vm01.dev phalcon.dev`
+`10.4.4.51      vm01.devel phalcon.devel`
 
 Save the file and open a web browser to access this pages and start to develop whit PhalcoPHP 
 

@@ -106,7 +106,7 @@ sudo touch /etc/nginx/sites-available/default
 sudo cat >> /etc/nginx/sites-available/default <<'EOF'
 server {
     listen       80;
-    server_name  vm01.dev;
+    server_name  vm01.devel www.vm01.devel;
     charset utf8;
 
     root /var/www/html;
@@ -154,7 +154,7 @@ server {
         root /var/www/phalcon/public;
         # Add index.php to the list if you are using PHP
         index index.html index.htm index.nginx-debian.html index.php;
-        server_name  phalcon.dev;
+        server_name  phalcon.devel www.phalcon.devel;
         charset utf8;
         location / {
                 try_files $uri $uri/ /index.php?_url=$uri&$args;
