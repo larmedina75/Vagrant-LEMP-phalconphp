@@ -74,7 +74,7 @@ You can view nginx logs throught a web browser, user the URL http://vm01.devel/v
 This code is work of Alexandre Plennevaux [@pixeline](https://gist.github.com/pixeline) and could be consulted [here](https://gist.github.com/pixeline/e437fae2848aa4691fbe)
 
 
-![view error log file example](https://github.com/larmedina75/Vagrant-LEMP-phalconphp/imgs/viewlogs.jpg "View Nginx error log file")
+![view error log file example](https://raw.githubusercontent.com/larmedina75/Vagrant-LEMP-phalconphp/master/imgs/viewlogs.jpg "View Nginx error log file")
 
 ## Customization
 
