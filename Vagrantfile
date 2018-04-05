@@ -90,5 +90,6 @@ Vagrant.configure("2") do |config|
 
   # install some base packages
   config.vm.provision :shell, :path => "provision.sh"
+  config.vm.provision "file", source: "./view-logs.php", destination: "/var/www/html/view-logs.php"
 
 end

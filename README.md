@@ -48,7 +48,7 @@ Clone your phalcon project repository and save it on  a folder with the name "ph
 Download the the virtual machine image
 
 ```
-$ vagrant box add ubuntu/trusty64
+$ vagrant box add ubuntu/xenial64
 ```
 
 And start the vagrant box
@@ -65,12 +65,21 @@ Add this line to the end of the file
 
 `10.4.4.51      vm01.devel phalcon.devel`
 
-Save the file and open a web browser to access this pages and start to develop whit PhalcoPHP 
+Save the file and open a web browser to access this pages and start to develop whit PhalcoPHP
+
+## Debug errors and view logs
+
+You can view nginx logs throught a web browser, user the URL http://vm01.devel/view-logs.php and select the log file you need.
+
+This code is work of Alexandre Plennevaux [@pixeline](https://gist.github.com/pixeline) and could be consulted [here](https://gist.github.com/pixeline/e437fae2848aa4691fbe)
+
+
+![view error log file example](https://github.com/larmedina75/Vagrant-LEMP-phalconphp/imgs/viewlogs.jpg "View Nginx error log file")
 
 ## Customization
 
-You can adapt this configuration to create more VMs by example have phvm02, phvm03, etc.
+You can adapt this configuration to create more VMs by example have vm02, m03, etc.
 
-Edit the provision.sh script fil and just copy the text between `# start Project` and `# end Project`, change some values like "phalcon" by your new project name and insert modified text after `# end Project`.
+Edit the provision.sh script file and just copy the text between `# start Project` and `# end Project`, change some values like "phalcon" by your new project name and insert modified text after `# end Project`.
 
-You may need to add some lines to the `/etc/hosts` file and include the mount command to Vagrantfile whit the new path.
+You may need to add some lines to the `/etc/hosts` file and include a new path to the mount command in the Vagrantfile.
