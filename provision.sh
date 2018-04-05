@@ -207,3 +207,7 @@ sudo composer install
 sudo mv /tmp/vendor/phalcon/devtools /opt/
 sudo ln -s /opt/devtools/phalcon.php /usr/bin/phalcon
 sudo chmod ugo+x /usr/bin/phalcon
+
+#Restart php7-0 service
+sudo systemctl restart php7.0-fpm.service
+sudo systemctl restart nginx.service
