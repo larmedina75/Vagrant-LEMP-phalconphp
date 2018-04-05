@@ -67,9 +67,9 @@ Add this line to the end of the file
 
 Save the file and open a web browser to access this pages and start to develop whit PhalcoPHP
 
-## Debug errors and view logs
+## Debug errors and view nginx logs
 
-You can view nginx logs throught a web browser, user the URL http://vm01.devel/view-logs.php and select the log file you need.
+You can view nginx logs throught a web browser like tail command works, use the URL http://vm01.devel/view-logs.php and select the log file you need.
 
 This code is work of Alexandre Plennevaux [@pixeline](https://gist.github.com/pixeline) and could be consulted [here](https://gist.github.com/pixeline/e437fae2848aa4691fbe)
 
